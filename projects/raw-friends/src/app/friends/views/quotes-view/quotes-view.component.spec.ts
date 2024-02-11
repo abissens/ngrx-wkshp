@@ -133,6 +133,54 @@ describe('QuotesViewComponent', () => {
     tick(1000);
     expect(selectFixtureParent(fixture, '.mat-mdc-snack-bar-label')).toBeNull();
   }));
+
+  it('handle search filter', fakeAsync(() => {
+    // get quotes init
+    quoteService.getQuotes.mockReturnValue(of(mockQuotes));
+
+    // prepare fixture
+    const fixture = TestBed.createComponent(QuotesViewComponent);
+    fixture.detectChanges();
+
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
+    fixture.componentInstance.searchQuoteControl.setValue('Quote 1');
+
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
+    expect(selectAllFixture(fixture, '.quote-item')).toHaveLength(1);
+    expect(selectFixture(fixture, '.quote-item:nth-child(1) .character-name').textContent).toContain('Character 1');
+    expect(selectFixture(fixture, '.quote-item:nth-child(1) .quote-text').textContent).toContain('Quote 1');
+
+  }));
+
+  it('should handle search filter when empty', fakeAsync(() => {
+    // get quotes init
+    quoteService.getQuotes.mockReturnValue(of(mockQuotes));
+
+    // prepare fixture
+    const fixture = TestBed.createComponent(QuotesViewComponent);
+    fixture.detectChanges();
+
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
+    fixture.componentInstance.searchQuoteControl.setValue('Quote not found');
+
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
+    expect(selectFixture(fixture, '.no-quotes').textContent).toContain('No quotes available.');
+    expect(selectAllFixture(fixture, '.quote-item').length).toBe(0);
+
+  }));
+
 });
 
 const mockCharacters: Character[] = [
@@ -155,4 +203,8 @@ function selectFixture<T>(fixture: ComponentFixture<T>, selector: string) {
 
 function selectFixtureParent<T>(fixture: ComponentFixture<T>, selector: string) {
   return fixture.nativeElement.parentNode.querySelector(selector);
+}
+
+function selectAllFixture<T>(fixture: ComponentFixture<T>, selector: string) {
+  return fixture.nativeElement.querySelectorAll(selector);
 }
