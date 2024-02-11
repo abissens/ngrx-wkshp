@@ -1,8 +1,9 @@
-import {createActionGroup, props} from '@ngrx/store';
+import {createActionGroup, emptyProps, props} from '@ngrx/store';
 import {Quote} from '../../domain/quote.model';
 import {Character} from '../../domain/character.model';
 import {Episode} from '../../domain/episode.model';
-import {ALL_CHARACTERS, ALL_EPISODES, QUOTES} from '../global.state';
+import {ALL_CHARACTERS, ALL_EPISODES, LOADING_QUOTES_STATUS, QUOTES} from '../global.state';
+import {RequestStatus} from '../../views/data/request.data';
 
 export const QuoteAPIActions = createActionGroup({
   source: 'Quotes API',
@@ -11,5 +12,8 @@ export const QuoteAPIActions = createActionGroup({
     'Retrieved quotes': props<{ [QUOTES]: ReadonlyArray<Quote> }>(),
     'Retrieved characters': props<{ [ALL_CHARACTERS]: ReadonlyArray<Character> }>(),
     'Retrieved episodes': props<{ [ALL_EPISODES]: ReadonlyArray<Episode> }>(),
+    'Loading quotes': emptyProps(),
+    'Loaded quotes': emptyProps(),
+    'Error loading quotes': emptyProps(),
   },
 });

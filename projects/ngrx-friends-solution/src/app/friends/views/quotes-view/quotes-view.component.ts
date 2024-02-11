@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, Signal} from '@angular/core';
 import {debounceTime, distinctUntilChanged, filter, map, mergeMap, Observable, OperatorFunction} from 'rxjs';
 import {Quote, QuoteAddRequest} from '../../domain/quote.model';
 import {QuoteService} from '../../services/quote.service';
@@ -10,7 +10,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AddQuoteComponent} from '../../components/add-quote/add-quote.component';
 import {AddQuoteComponentData} from '../../components/add-quote/AddQuoteComponentData';
 import {Store} from '@ngrx/store';
-import {selectQuotes} from '../../store/quotes/quote.selectors';
+import {selectLoadingQuoteStatus, selectQuotes} from '../../store/quotes/quote.selectors';
 import {QuoteAPIActions} from '../../store/quotes/quote.actions';
 import {selectCharacters} from '../../store/characters/characters.store';
 import {selectEpisodes} from '../../store/episodes/episodes.store';
@@ -22,7 +22,7 @@ import {selectEpisodes} from '../../store/episodes/episodes.store';
 })
 export class QuotesViewComponent implements OnInit {
 
-  loadingQuotesStatus: RequestStatus = RequestStatus.LOADED;
+  loadingQuotesStatus: Signal<RequestStatus> = this.store.selectSignal(selectLoadingQuoteStatus);
 
   searchQuoteControl = new FormControl(this.searchService.searchQuery);
 
@@ -54,14 +54,14 @@ export class QuotesViewComponent implements OnInit {
   }
 
   loadQuotes(): void {
-    this.loadingQuotesStatus = RequestStatus.LOADING;
+    this.store.dispatch(QuoteAPIActions.loadingQuotes());
     this.quoteService.getQuotes().subscribe({
       next: quotes => {
-        this.loadingQuotesStatus = RequestStatus.LOADED;
+        this.store.dispatch(QuoteAPIActions.loadedQuotes());
         this.store.dispatch(QuoteAPIActions.retrievedQuotes({quotes: [...quotes]}))
       },
       error: err => {
-        this.loadingQuotesStatus = RequestStatus.ERRORED;
+        this.store.dispatch(QuoteAPIActions.errorLoadingQuotes());
         this.snackBar.open(err.message, undefined, {
           duration: 3000
         });

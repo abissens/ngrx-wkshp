@@ -14,8 +14,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {QuotesByCharacterComponent} from './components/quotes-by-character/quotes-by-character.component';
 import {MatBadgeModule} from '@angular/material/badge';
 import {StoreModule} from '@ngrx/store';
-import {ALL_CHARACTERS, ALL_EPISODES, QUOTES} from './store/global.state';
-import {quotesReducer} from './store/quotes/quote.reducers';
+import {ALL_CHARACTERS, ALL_EPISODES, LOADING_QUOTES_STATUS, QUOTES} from './store/global.state';
+import {loadingQuoteStatusReducer, quotesReducer} from './store/quotes/quote.reducers';
 import {charactersReducer} from './store/characters/characters.store';
 import {episodesReducer} from './store/episodes/episodes.store';
 
@@ -42,6 +42,7 @@ import {episodesReducer} from './store/episodes/episodes.store';
       [QUOTES]: quotesReducer,
       [ALL_CHARACTERS]: charactersReducer,
       [ALL_EPISODES]: episodesReducer,
+      [LOADING_QUOTES_STATUS] : loadingQuoteStatusReducer,
     }),
   ]
 })
