@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {RequestStatus} from '../data/request.data';
-import {BehaviorSubject, map, Observable} from 'rxjs';
+import {BehaviorSubject, debounceTime, distinctUntilChanged, map, mergeMap, Observable, startWith} from 'rxjs';
 import {Quote} from '../../domain/quote.model';
 import {QuoteService} from '../../services/quote.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute} from '@angular/router';
+import {FormControl} from '@angular/forms';
 
 @Component({
   selector: 'app-episode-view',
@@ -14,9 +15,18 @@ import {ActivatedRoute} from '@angular/router';
 export class EpisodeViewComponent implements OnInit {
   loadingQuotesStatus: RequestStatus = RequestStatus.LOADED;
 
-  private quotesSubject = new BehaviorSubject<Quote[]>([]);
-  public readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
+  searchQuoteControl = new FormControl('');
 
+  private quotesSubject = new BehaviorSubject<Quote[]>([]);
+  private readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
+
+  public readonly filteredQuotes$: Observable<Quote[]> =
+    this.searchQuoteControl.valueChanges.pipe(
+      startWith(this.searchQuoteControl.value), // make it emit first value
+      debounceTime(300),
+      distinctUntilChanged(),
+      mergeMap(searchValue => this.quotes$.pipe(map(quotes => quotes.filter(quote => this.searchFilter(quote, searchValue ?? '')))))
+    );
   constructor(private quoteService: QuoteService,
               private route: ActivatedRoute,
               private snackBar: MatSnackBar) {
@@ -45,5 +55,10 @@ export class EpisodeViewComponent implements OnInit {
           });
         },
       });
+  }
+
+  private searchFilter(quote: Quote, searchQuery: string) {
+    return quote.character?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      quote.text.toLowerCase().includes(searchQuery.toLowerCase())
   }
 }

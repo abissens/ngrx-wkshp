@@ -44,7 +44,7 @@ describe('EpisodeViewComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('load quotes on initialization', () => {
+  it('load quotes on initialization', fakeAsync(() => {
     // get quotes init
     quoteService.getQuotes.mockReturnValue(of(mockQuotes));
 
@@ -52,13 +52,19 @@ describe('EpisodeViewComponent', () => {
     const fixture = TestBed.createComponent(EpisodeViewComponent);
     fixture.detectChanges();
 
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
     // load mock quotes
     expect(selectFixture(fixture, '.quote-item:nth-child(1) .character-name').textContent).toContain('Character 1');
     expect(selectFixture(fixture, '.quote-item:nth-child(1) .quote-text').textContent).toContain('Quote 1');
-    expect(selectAllFixture(fixture, '.quote-item')).toHaveLength(1); // only episode 1 quotes
-  });
+    expect(selectFixture(fixture, '.quote-item:nth-child(2) .character-name').textContent).toContain('Character 2');
+    expect(selectFixture(fixture, '.quote-item:nth-child(2) .quote-text').textContent).toContain('Quote 3');
+    expect(selectAllFixture(fixture, '.quote-item')).toHaveLength(2); // only episode 2 quotes over 3
+  }));
 
-  it('display "Loading quotes..." on loading', () => {
+  it('display "Loading quotes..." on loading', fakeAsync(() => {
     // Given empty observable
     const subject = new Subject<Quote[]>();
     quoteService.getQuotes.mockReturnValue(subject);
@@ -74,15 +80,20 @@ describe('EpisodeViewComponent', () => {
     subject.complete();
     fixture.detectChanges();
 
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
     expect(selectFixture(fixture, '.loading-indicator')).toBeNull();
 
     expect(selectFixture(fixture, '.quote-item:nth-child(1) .character-name').textContent).toContain('Character 1');
     expect(selectFixture(fixture, '.quote-item:nth-child(1) .quote-text').textContent).toContain('Quote 1');
-    expect(selectAllFixture(fixture, '.quote-item')).toHaveLength(1); // only episode 1 quotes
+    expect(selectFixture(fixture, '.quote-item:nth-child(2) .character-name').textContent).toContain('Character 2');
+    expect(selectFixture(fixture, '.quote-item:nth-child(2) .quote-text').textContent).toContain('Quote 3');
+    expect(selectAllFixture(fixture, '.quote-item')).toHaveLength(2); // only episode 2 quotes over 3
+  }));
 
-  });
-
-  it('display "No quotes available." on empty', () => {
+  it('display "No quotes available." on empty', fakeAsync(() => {
     // get quotes init
     quoteService.getQuotes.mockReturnValue(of([]));
 
@@ -90,9 +101,13 @@ describe('EpisodeViewComponent', () => {
     const fixture = TestBed.createComponent(EpisodeViewComponent);
     fixture.detectChanges();
 
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
     // no quotes
     expect(selectFixture(fixture, '.no-quotes').textContent).toContain('No quotes available.');
-  });
+  }));
 
   it('display "Cannot load quotes." on error', () => {
     // get quotes is errored
@@ -125,6 +140,53 @@ describe('EpisodeViewComponent', () => {
     tick(1000);
     expect(selectFixtureParent(fixture, '.mat-mdc-snack-bar-label')).toBeNull();
   }));
+
+  it('handle search filter', fakeAsync(() => {
+    // get quotes init
+    quoteService.getQuotes.mockReturnValue(of(mockQuotes));
+
+    // prepare fixture
+    const fixture = TestBed.createComponent(EpisodeViewComponent);
+    fixture.detectChanges();
+
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
+    fixture.componentInstance.searchQuoteControl.setValue('Quote 1');
+
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
+    expect(selectAllFixture(fixture, '.quote-item')).toHaveLength(1);
+    expect(selectFixture(fixture, '.quote-item:nth-child(1) .character-name').textContent).toContain('Character 1');
+    expect(selectFixture(fixture, '.quote-item:nth-child(1) .quote-text').textContent).toContain('Quote 1');
+
+  }));
+
+  it('should handle search filter when empty', fakeAsync(() => {
+    // get quotes init
+    quoteService.getQuotes.mockReturnValue(of(mockQuotes));
+
+    // prepare fixture
+    const fixture = TestBed.createComponent(EpisodeViewComponent);
+    fixture.detectChanges();
+
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
+    fixture.componentInstance.searchQuoteControl.setValue('Quote not found');
+
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
+    expect(selectFixture(fixture, '.no-quotes').textContent).toContain('No quotes available.');
+    expect(selectAllFixture(fixture, '.quote-item').length).toBe(0);
+
+  }));
 });
 
 const mockCharacters: Character[] = [
@@ -139,6 +201,7 @@ const mockEpisodes: Episode[] = [
 const mockQuotes: Quote[] = [
   {character: mockCharacters[0], text: 'Quote 1', episode: mockEpisodes[0]},
   {character: mockCharacters[1], text: 'Quote 2', episode: mockEpisodes[1]},
+  {character: mockCharacters[1], text: 'Quote 3', episode: mockEpisodes[0]},
 ];
 
 function selectFixture<T>(fixture: ComponentFixture<T>, selector: string) {
