@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {QuotesViewComponent} from './quotes-view.component';
 import {FriendsModule} from '../../friends.module';
@@ -102,7 +102,7 @@ describe('QuotesViewComponent', () => {
     expect(selectFixture(fixture, '.err-quotes').textContent).toContain('Cannot load quotes.');
   });
 
-  it('fire snackbar on error', () => {
+  it('fire snackbar on error for 3 seconds', fakeAsync(() => {
     // get quotes is errored
     quoteService.getQuotes.mockReturnValue(throwError(() => new Error("some error")));
 
@@ -112,7 +112,15 @@ describe('QuotesViewComponent', () => {
 
     // err snack bar
     expect(selectFixtureParent(fixture, '.mat-mdc-snack-bar-label').textContent).toContain('some error');
-  });
+
+    // wait 2 seconds
+    tick(2500);
+    expect(selectFixtureParent(fixture, '.mat-mdc-snack-bar-label').textContent).toContain('some error');
+
+    // wait extra 1 seconds
+    tick(1000);
+    expect(selectFixtureParent(fixture, '.mat-mdc-snack-bar-label')).toBeNull();
+  }));
 });
 
 const mockCharacters: Character[] = [
