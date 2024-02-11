@@ -10,7 +10,7 @@ import {AddQuoteComponent} from '../../components/add-quote/add-quote.component'
 import {AddQuoteComponentData} from '../../components/add-quote/AddQuoteComponentData';
 import {Store} from '@ngrx/store';
 import {selectFilteredQuotes, selectLoadingQuoteStatus, selectQuotes} from '../../store/quotes/quote.selectors';
-import {QuoteAPIActions} from '../../store/quotes/quote.actions';
+import {QuoteActions, QuoteAPIActions} from '../../store/quotes/quote.actions';
 import {selectCharacters} from '../../store/characters/characters.store';
 import {selectEpisodes} from '../../store/episodes/episodes.store';
 import {searchQuoteAction, selectSearchQuote} from '../../store/view/view.store';
@@ -103,8 +103,8 @@ export class QuotesViewComponent implements OnInit {
       .pipe(
         filter(quote => quote !== undefined) as OperatorFunction<QuoteAddRequest | undefined, QuoteAddRequest>,
         mergeMap(quote => this.quoteService.addQuote(quote)))
-      .subscribe(() => {
-        this.loadQuotes();
+      .subscribe(quote => {
+        this.store.dispatch(QuoteActions.quoteAdded({quote}))
       });
   }
 }

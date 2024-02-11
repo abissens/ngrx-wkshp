@@ -16,3 +16,11 @@ export const QuoteAPIActions = createActionGroup({
     'Error loading quotes': emptyProps(),
   },
 });
+
+export const QuoteActions = createActionGroup({
+  source: 'Quotes',
+  events: {
+    'Quote added': props<{ quote: Quote }>(),
+  },
+});
+
