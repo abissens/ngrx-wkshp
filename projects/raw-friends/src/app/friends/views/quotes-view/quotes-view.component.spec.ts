@@ -77,6 +77,18 @@ describe('QuotesViewComponent', () => {
 
   });
 
+  it('should display "No quotes available." on empty', () => {
+    // get quotes init
+    quoteService.getQuotes.mockReturnValue(of([]));
+
+    // prepare fixture
+    const fixture = TestBed.createComponent(QuotesViewComponent);
+    fixture.detectChanges();
+
+    // no quotes
+    const select = fixture.nativeElement.querySelector.bind(fixture.nativeElement);
+    expect(select('.no-quotes').textContent).toContain('No quotes available.');
+  });
 });
 
 const mockCharacters: Character[] = [
