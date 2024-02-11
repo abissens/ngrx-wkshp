@@ -3,14 +3,20 @@ import {Character} from '../domain/character.model';
 import {Episode} from '../domain/episode.model';
 import {Quote, QuoteAddRequest} from '../domain/quote.model';
 import {Observable, of} from 'rxjs';
+import {DebuggerDev} from './debugger-dev.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class QuoteService {
 
+  constructor(private debuggerDev: DebuggerDev) {
+  }
+
   getQuotes(): Observable<Quote[]> {
-    return of(this.quotes);
+    const dc = this.debuggerDev.getConfig('getQuotes');
+    const result = of(this.quotes);
+    return this.debuggerDev.applyDc(result, dc);
   }
 
   getCharacters(): Observable<Character[]> {
