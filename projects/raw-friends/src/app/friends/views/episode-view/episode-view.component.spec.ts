@@ -60,7 +60,7 @@ describe('EpisodeViewComponent', () => {
 
   it('display "Loading quotes..." on loading', () => {
     // Given empty observable
-    let subject = new Subject<Quote[]>();
+    const subject = new Subject<Quote[]>();
     quoteService.getQuotes.mockReturnValue(subject);
 
     // prepare fixture
