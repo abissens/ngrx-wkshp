@@ -38,7 +38,7 @@ describe('QuotesViewComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('load quotes on initialization', () => {
+  it('load quotes on initialization', fakeAsync(() => {
     // get quotes init
     quoteService.getQuotes.mockReturnValue(of(mockQuotes));
 
@@ -46,14 +46,18 @@ describe('QuotesViewComponent', () => {
     const fixture = TestBed.createComponent(QuotesViewComponent);
     fixture.detectChanges();
 
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
     // load mock quotes
     expect(selectFixture(fixture, '.quote-item:nth-child(1) .character-name').textContent).toContain('Character 1');
     expect(selectFixture(fixture, '.quote-item:nth-child(1) .quote-text').textContent).toContain('Quote 1');
     expect(selectFixture(fixture, '.quote-item:nth-child(2) .character-name').textContent).toContain('Character 2');
     expect(selectFixture(fixture, '.quote-item:nth-child(2) .quote-text').textContent).toContain('Quote 2');
-  });
+  }));
 
-  it('display "Loading quotes..." on loading', () => {
+  it('display "Loading quotes..." on loading', fakeAsync(() => {
     // Given empty observable
     const subject = new Subject<Quote[]>();
     quoteService.getQuotes.mockReturnValue(subject);
@@ -69,6 +73,10 @@ describe('QuotesViewComponent', () => {
     subject.complete();
     fixture.detectChanges();
 
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
     expect(selectFixture(fixture, '.loading-indicator')).toBeNull();
 
     expect(selectFixture(fixture, '.quote-item:nth-child(1) .character-name').textContent).toContain('Character 1');
@@ -76,9 +84,9 @@ describe('QuotesViewComponent', () => {
     expect(selectFixture(fixture, '.quote-item:nth-child(2) .character-name').textContent).toContain('Character 2');
     expect(selectFixture(fixture, '.quote-item:nth-child(2) .quote-text').textContent).toContain('Quote 2');
 
-  });
+  }));
 
-  it('display "No quotes available." on empty', () => {
+  it('display "No quotes available." on empty', fakeAsync(() => {
     // get quotes init
     quoteService.getQuotes.mockReturnValue(of([]));
 
@@ -86,9 +94,13 @@ describe('QuotesViewComponent', () => {
     const fixture = TestBed.createComponent(QuotesViewComponent);
     fixture.detectChanges();
 
+    // handle debounce time
+    tick(350);
+    fixture.detectChanges();
+
     // no quotes
     expect(selectFixture(fixture, '.no-quotes').textContent).toContain('No quotes available.');
-  });
+  }));
 
   it('display "Cannot load quotes." on error', () => {
     // get quotes is errored
