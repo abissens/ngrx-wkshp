@@ -1,6 +1,6 @@
 import {Component, OnInit, Signal} from '@angular/core';
 import {RequestStatus} from '../data/request.data';
-import {debounceTime, distinctUntilChanged, map, mergeMap, Observable} from 'rxjs';
+import {debounceTime, distinctUntilChanged, Observable} from 'rxjs';
 import {Quote} from '../../domain/quote.model';
 import {QuoteService} from '../../services/quote.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -9,7 +9,11 @@ import {FormControl} from '@angular/forms';
 import {searchQuoteAction, selectSearchQuote} from '../../store/view/view.store';
 import {Store} from '@ngrx/store';
 import {QuoteAPIActions} from '../../store/quotes/quote.actions';
-import {selectLoadingQuoteStatus, selectQuotesForEpisodeFactory} from '../../store/quotes/quote.selectors';
+import {
+  selectFilteredQuotesForEpisodeFactory,
+  selectLoadingQuoteStatus,
+  selectQuotesForEpisodeFactory
+} from '../../store/quotes/quote.selectors';
 
 @Component({
   selector: 'app-episode-view',
@@ -21,18 +25,12 @@ export class EpisodeViewComponent implements OnInit {
   loadingQuotesStatus: Signal<RequestStatus> = this.store.selectSignal(selectLoadingQuoteStatus);
 
   private searchQuoteSignal = this.store.selectSignal(selectSearchQuote);
-  private readonly searchQuote$ = this.store.select(selectSearchQuote);
 
   searchQuoteControl = new FormControl(this.searchQuoteSignal());
 
   public quotes$?: Observable<Quote[]>;
 
-  public readonly filteredQuotes$: Observable<Quote[]> =
-    this.searchQuote$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      mergeMap(searchValue => this.quotes$!.pipe(map(quotes => quotes.filter(quote => this.searchFilter(quote, searchValue ?? '')))))
-    );
+  public filteredQuotes$?: Observable<Quote[]>;
 
   constructor(private quoteService: QuoteService,
               private store: Store,
@@ -44,8 +42,13 @@ export class EpisodeViewComponent implements OnInit {
     this.route.params.subscribe((params) => {
       const episodeId = +params['id'];
       this.quotes$ = this.store.select(selectQuotesForEpisodeFactory(episodeId));
+      this.filteredQuotes$ = this.store.select(selectFilteredQuotesForEpisodeFactory(episodeId));
+
       this.loadQuotes();
-      this.searchQuoteControl.valueChanges.subscribe(v => this.store.dispatch(searchQuoteAction({searchValue: v ?? ''})));
+      this.searchQuoteControl.valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      ).subscribe(v => this.store.dispatch(searchQuoteAction({searchValue: v ?? ''})));
     });
   }
 

@@ -1,5 +1,5 @@
 import {Component, OnInit, Signal} from '@angular/core';
-import {debounceTime, distinctUntilChanged, filter, map, mergeMap, Observable, OperatorFunction} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, mergeMap, Observable, OperatorFunction} from 'rxjs';
 import {Quote, QuoteAddRequest} from '../../domain/quote.model';
 import {QuoteService} from '../../services/quote.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -9,7 +9,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AddQuoteComponent} from '../../components/add-quote/add-quote.component';
 import {AddQuoteComponentData} from '../../components/add-quote/AddQuoteComponentData';
 import {Store} from '@ngrx/store';
-import {selectLoadingQuoteStatus, selectQuotes} from '../../store/quotes/quote.selectors';
+import {selectFilteredQuotes, selectLoadingQuoteStatus, selectQuotes} from '../../store/quotes/quote.selectors';
 import {QuoteAPIActions} from '../../store/quotes/quote.actions';
 import {selectCharacters} from '../../store/characters/characters.store';
 import {selectEpisodes} from '../../store/episodes/episodes.store';
@@ -25,7 +25,6 @@ export class QuotesViewComponent implements OnInit {
   loadingQuotesStatus: Signal<RequestStatus> = this.store.selectSignal(selectLoadingQuoteStatus);
 
   private searchQuoteSignal = this.store.selectSignal(selectSearchQuote);
-  private readonly searchQuote$ = this.store.select(selectSearchQuote);
 
   searchQuoteControl = new FormControl(this.searchQuoteSignal());
 
@@ -35,12 +34,7 @@ export class QuotesViewComponent implements OnInit {
 
   private readonly allEpisodes$ = this.store.select(selectEpisodes);
 
-  public readonly filteredQuotes$: Observable<Quote[]> =
-    this.searchQuote$.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      mergeMap(searchValue => this.quotes$.pipe(map(quotes => quotes.filter(quote => this.searchFilter(quote, searchValue ?? '')))))
-    );
+  public readonly filteredQuotes$: Observable<Quote[]> = this.store.select(selectFilteredQuotes);
 
   constructor(private quoteService: QuoteService,
               private dialog: MatDialog,
@@ -52,7 +46,10 @@ export class QuotesViewComponent implements OnInit {
     this.loadQuotes();
     this.loadCharacters();
     this.loadEpisodes();
-    this.searchQuoteControl.valueChanges.subscribe(v => this.store.dispatch(searchQuoteAction({searchValue: v??''})));
+    this.searchQuoteControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(v => this.store.dispatch(searchQuoteAction({searchValue: v ?? ''})));
   }
 
   loadQuotes(): void {
