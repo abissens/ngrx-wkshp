@@ -5,7 +5,6 @@ import {QuoteService} from '../../services/quote.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {RequestStatus} from '../data/request.data';
 import {FormControl} from '@angular/forms';
-import {SearchViewService} from '../view-services/search-view.service';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AddQuoteComponent} from '../../components/add-quote/add-quote.component';
 import {AddQuoteComponentData} from '../../components/add-quote/AddQuoteComponentData';
@@ -14,7 +13,7 @@ import {selectLoadingQuoteStatus, selectQuotes} from '../../store/quotes/quote.s
 import {QuoteAPIActions} from '../../store/quotes/quote.actions';
 import {selectCharacters} from '../../store/characters/characters.store';
 import {selectEpisodes} from '../../store/episodes/episodes.store';
-import {selectSearchQuote} from '../../store/view/view.store';
+import {searchQuoteAction, selectSearchQuote} from '../../store/view/view.store';
 
 @Component({
   selector: 'app-quotes-view',
@@ -25,9 +24,10 @@ export class QuotesViewComponent implements OnInit {
 
   loadingQuotesStatus: Signal<RequestStatus> = this.store.selectSignal(selectLoadingQuoteStatus);
 
+  private searchQuoteSignal = this.store.selectSignal(selectSearchQuote);
   private readonly searchQuote$ = this.store.select(selectSearchQuote);
 
-  searchQuoteControl = new FormControl(this.searchService.searchQuery);
+  searchQuoteControl = new FormControl(this.searchQuoteSignal());
 
   public readonly quotes$: Observable<readonly Quote[]> = this.store.select(selectQuotes);
 
@@ -43,7 +43,6 @@ export class QuotesViewComponent implements OnInit {
     );
 
   constructor(private quoteService: QuoteService,
-              private searchService: SearchViewService,
               private dialog: MatDialog,
               private snackBar: MatSnackBar,
               private store: Store) {
@@ -53,7 +52,7 @@ export class QuotesViewComponent implements OnInit {
     this.loadQuotes();
     this.loadCharacters();
     this.loadEpisodes();
-    this.searchQuoteControl.valueChanges.subscribe(v => this.searchService.searchQuery = v ?? '');
+    this.searchQuoteControl.valueChanges.subscribe(v => this.store.dispatch(searchQuoteAction({searchValue: v??''})));
   }
 
   loadQuotes(): void {
