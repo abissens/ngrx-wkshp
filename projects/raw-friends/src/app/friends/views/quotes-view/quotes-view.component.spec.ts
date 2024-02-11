@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
 import {QuotesViewComponent} from './quotes-view.component';
 import {FriendsModule} from '../../friends.module';
@@ -6,12 +6,10 @@ import {QuoteService} from '../../services/quote.service';
 import {Quote} from '../../domain/quote.model';
 import {Character} from '../../domain/character.model';
 import {Episode} from '../../domain/episode.model';
-import {of} from 'rxjs';
+import {of, Subject} from 'rxjs';
 import {AppRoutingModule} from '../../../app-routing.module';
 
 describe('QuotesViewComponent', () => {
-  let component: QuotesViewComponent;
-  let fixture: ComponentFixture<QuotesViewComponent>;
   let quoteService: jest.Mocked<QuoteService>;
 
   // init quotes mock service
@@ -21,10 +19,6 @@ describe('QuotesViewComponent', () => {
       getCharacters: jest.fn(),
       getEpisodes: jest.fn(),
     } as unknown as jest.Mocked<QuoteService>;
-
-    quoteService.getCharacters.mockReturnValue(of(mockCharacters));
-    quoteService.getEpisodes.mockReturnValue(of(mockEpisodes));
-    quoteService.getQuotes.mockReturnValue(of(mockQuotes));
   });
 
   // init test bed
@@ -34,17 +28,19 @@ describe('QuotesViewComponent', () => {
       imports: [FriendsModule, AppRoutingModule],
       providers: [{provide: QuoteService, useValue: quoteService}],
     });
-    fixture = TestBed.createComponent(QuotesViewComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('create', () => {
-    expect(component).toBeTruthy();
+    const fixture = TestBed.createComponent(QuotesViewComponent);
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('load quotes on initialization', fakeAsync(() => {
-    // Given init
+  it('load quotes on initialization', () => {
+    // get quotes init
+    quoteService.getQuotes.mockReturnValue(of(mockQuotes));
+
+    // prepare fixture
+    const fixture = TestBed.createComponent(QuotesViewComponent);
     fixture.detectChanges();
 
     // load mock quotes
@@ -53,7 +49,33 @@ describe('QuotesViewComponent', () => {
     expect(select('.quote-item:nth-child(1) .quote-text').textContent).toContain('Quote 1');
     expect(select('.quote-item:nth-child(2) .character-name').textContent).toContain('Character 2');
     expect(select('.quote-item:nth-child(2) .quote-text').textContent).toContain('Quote 2');
-  }));
+  });
+
+  it('should display "Loading quotes..." on loading', () => {
+    // Given empty observable
+    let subject = new Subject<Quote[]>();
+    quoteService.getQuotes.mockReturnValue(subject);
+
+    // prepare fixture
+    const fixture = TestBed.createComponent(QuotesViewComponent);
+    fixture.detectChanges();
+
+    const select = fixture.nativeElement.querySelector.bind(fixture.nativeElement);
+    expect(select('.loading-indicator').textContent).toContain('Loading quotes...');
+
+    // load mock quotes
+    subject.next(mockQuotes);
+    subject.complete();
+    fixture.detectChanges();
+
+    expect(select('.loading-indicator')).toBeNull();
+
+    expect(select('.quote-item:nth-child(1) .character-name').textContent).toContain('Character 1');
+    expect(select('.quote-item:nth-child(1) .quote-text').textContent).toContain('Quote 1');
+    expect(select('.quote-item:nth-child(2) .character-name').textContent).toContain('Character 2');
+    expect(select('.quote-item:nth-child(2) .quote-text').textContent).toContain('Quote 2');
+
+  });
 
 });
 
