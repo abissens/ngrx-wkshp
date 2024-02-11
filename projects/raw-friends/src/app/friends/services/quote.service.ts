@@ -9,9 +9,6 @@ import {Observable, of} from 'rxjs';
 })
 export class QuoteService {
 
-  constructor() {
-  }
-
   getQuotes(): Observable<Quote[]> {
     return of(this.quotes);
   }

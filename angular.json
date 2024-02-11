@@ -85,6 +85,15 @@
           "options": {
             "configPath": "../../jest.config.js"
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/raw-friends/**/*.ts",
+              "projects/raw-friends/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -169,6 +178,15 @@
           "builder": "@angular-builders/jest:run",
           "options": {
             "configPath": "../../jest.config.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ngrx-friends/**/*.ts",
+              "projects/ngrx-friends/**/*.html"
+            ]
           }
         }
       }
