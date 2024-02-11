@@ -1,5 +1,15 @@
 # Ngrx Workshop
 
+## Raw friends
+
+```shell
+cd projects/raw-friends/src/app/
+ng generate module friends
+ng g c friends/views/quotes-view --module=friends
+ng g c friends/views/episode-view --module=friends
+ng g s friends/services/quote
+```
+
 
 ## Scaffolding  
 
