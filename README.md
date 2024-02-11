@@ -51,5 +51,9 @@ ng add @ngrx/store@16 --project ngrx-friends
 ng add @ngrx/effects@16 --project ngrx-friends
 ng add @ngrx/store-devtools@16 --project ngrx-friends
 
+ng add @angular-eslint/schematics --project 
+ng g @angular-eslint/schematics:add-eslint-to-project raw-friends
+ng g @angular-eslint/schematics:add-eslint-to-project ngrx-friends
+
 ng add @ngrx/eslint-plugin@16 --project ngrx-friends
 ```
