@@ -1,14 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {
-  BehaviorSubject,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  map,
-  mergeMap,
-  Observable,
-  OperatorFunction
-} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, map, mergeMap, Observable, OperatorFunction} from 'rxjs';
 import {Quote, QuoteAddRequest} from '../../domain/quote.model';
 import {QuoteService} from '../../services/quote.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
@@ -18,11 +9,11 @@ import {SearchViewService} from '../view-services/search-view.service';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {AddQuoteComponent} from '../../components/add-quote/add-quote.component';
 import {AddQuoteComponentData} from '../../components/add-quote/AddQuoteComponentData';
-import {Character} from '../../domain/character.model';
-import {Episode} from '../../domain/episode.model';
 import {Store} from '@ngrx/store';
 import {selectQuotes} from '../../store/quotes/quote.selectors';
 import {QuoteAPIActions} from '../../store/quotes/quote.actions';
+import {selectCharacters} from '../../store/characters/characters.store';
+import {selectEpisodes} from '../../store/episodes/episodes.store';
 
 @Component({
   selector: 'app-quotes-view',
@@ -37,11 +28,9 @@ export class QuotesViewComponent implements OnInit {
 
   public readonly quotes$: Observable<readonly Quote[]> = this.store.select(selectQuotes);
 
-  private charactersSubject = new BehaviorSubject<Character[]>([]);
-  private readonly allCharacters$ = this.charactersSubject.asObservable();
+  private readonly allCharacters$ = this.store.select(selectCharacters);
 
-  private episodesSubject = new BehaviorSubject<Episode[]>([]);
-  private readonly allEpisodes$ = this.episodesSubject.asObservable();
+  private readonly allEpisodes$ = this.store.select(selectEpisodes);
 
   public readonly filteredQuotes$: Observable<Quote[]> =
     this.searchService.searchQuery$.pipe(
@@ -82,7 +71,7 @@ export class QuotesViewComponent implements OnInit {
 
   private loadCharacters() {
     this.quoteService.getCharacters().subscribe({
-      next: characters => this.charactersSubject.next(characters),
+      next: characters => this.store.dispatch(QuoteAPIActions.retrievedCharacters({allCharacters: [...characters]})),
       error: err => {
         this.snackBar.open(err.message, undefined, {
           duration: 3000
@@ -93,7 +82,7 @@ export class QuotesViewComponent implements OnInit {
 
   private loadEpisodes() {
     this.quoteService.getEpisodes().subscribe({
-      next: episodes => this.episodesSubject.next(episodes),
+      next: episodes => this.store.dispatch(QuoteAPIActions.retrievedEpisodes({allEpisodes: [...episodes]})),
       error: err => {
         this.snackBar.open(err.message, undefined, {
           duration: 3000

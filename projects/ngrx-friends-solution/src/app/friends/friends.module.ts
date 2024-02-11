@@ -11,11 +11,13 @@ import {AddQuoteComponent} from './components/add-quote/add-quote.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
-import { QuotesByCharacterComponent } from './components/quotes-by-character/quotes-by-character.component';
+import {QuotesByCharacterComponent} from './components/quotes-by-character/quotes-by-character.component';
 import {MatBadgeModule} from '@angular/material/badge';
 import {StoreModule} from '@ngrx/store';
-import {QUOTES} from './store/global.state';
+import {ALL_CHARACTERS, ALL_EPISODES, QUOTES} from './store/global.state';
 import {quotesReducer} from './store/quotes/quote.reducers';
+import {charactersReducer} from './store/characters/characters.store';
+import {episodesReducer} from './store/episodes/episodes.store';
 
 
 @NgModule({
@@ -38,7 +40,10 @@ import {quotesReducer} from './store/quotes/quote.reducers';
     MatBadgeModule,
     StoreModule.forRoot({
       [QUOTES]: quotesReducer,
+      [ALL_CHARACTERS]: charactersReducer,
+      [ALL_EPISODES]: episodesReducer,
     }),
   ]
 })
-export class FriendsModule { }
+export class FriendsModule {
+}
