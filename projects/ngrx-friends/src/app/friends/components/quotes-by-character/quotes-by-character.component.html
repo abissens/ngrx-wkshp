@@ -1,0 +1,5 @@
+<div class="by-char-wrapper">
+  <div *ngFor="let byCharacter of (byCharacter$ | async)!" class="by-char-item">
+    <div matBadge="{{ byCharacter.size }}" matBadgeOverlap="true" >{{ byCharacter.character }}</div>
+  </div>
+</div>
