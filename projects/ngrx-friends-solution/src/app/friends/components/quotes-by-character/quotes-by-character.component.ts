@@ -11,7 +11,7 @@ export class QuotesByCharacterComponent implements OnInit {
 
 
   @Input()
-  quotes$?: Observable<Quote[]>
+  quotes$?: Observable<readonly Quote[]>
 
   byCharacter$?: Observable<QuotesByCharacter[]>;
 

@@ -20,6 +20,9 @@ import {AddQuoteComponent} from '../../components/add-quote/add-quote.component'
 import {AddQuoteComponentData} from '../../components/add-quote/AddQuoteComponentData';
 import {Character} from '../../domain/character.model';
 import {Episode} from '../../domain/episode.model';
+import {Store} from '@ngrx/store';
+import {selectQuotes} from '../../store/quotes/quote.selectors';
+import {QuoteAPIActions} from '../../store/quotes/quote.actions';
 
 @Component({
   selector: 'app-quotes-view',
@@ -32,8 +35,7 @@ export class QuotesViewComponent implements OnInit {
 
   searchQuoteControl = new FormControl(this.searchService.searchQuery);
 
-  private quotesSubject = new BehaviorSubject<Quote[]>([]);
-  public readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
+  public readonly quotes$: Observable<readonly Quote[]> = this.store.select(selectQuotes);
 
   private charactersSubject = new BehaviorSubject<Character[]>([]);
   private readonly allCharacters$ = this.charactersSubject.asObservable();
@@ -51,7 +53,8 @@ export class QuotesViewComponent implements OnInit {
   constructor(private quoteService: QuoteService,
               private searchService: SearchViewService,
               private dialog: MatDialog,
-              private snackBar: MatSnackBar) {
+              private snackBar: MatSnackBar,
+              private store: Store) {
   }
 
   ngOnInit(): void {
@@ -66,7 +69,7 @@ export class QuotesViewComponent implements OnInit {
     this.quoteService.getQuotes().subscribe({
       next: quotes => {
         this.loadingQuotesStatus = RequestStatus.LOADED;
-        this.quotesSubject.next(quotes);
+        this.store.dispatch(QuoteAPIActions.retrievedQuotes({quotes: [...quotes]}))
       },
       error: err => {
         this.loadingQuotesStatus = RequestStatus.ERRORED;

@@ -13,6 +13,9 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
 import { QuotesByCharacterComponent } from './components/quotes-by-character/quotes-by-character.component';
 import {MatBadgeModule} from '@angular/material/badge';
+import {StoreModule} from '@ngrx/store';
+import {QUOTES} from './store/global.state';
+import {quotesReducer} from './store/quotes/quote.reducers';
 
 
 @NgModule({
@@ -32,7 +35,10 @@ import {MatBadgeModule} from '@angular/material/badge';
     MatDialogModule,
     MatAutocompleteModule,
     MatButtonModule,
-    MatBadgeModule
+    MatBadgeModule,
+    StoreModule.forRoot({
+      [QUOTES]: quotesReducer,
+    }),
   ]
 })
 export class FriendsModule { }
