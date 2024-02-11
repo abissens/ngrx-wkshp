@@ -11,13 +11,16 @@ import {AddQuoteComponent} from './components/add-quote/add-quote.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatButtonModule} from '@angular/material/button';
+import { QuotesByCharacterComponent } from './components/quotes-by-character/quotes-by-character.component';
+import {MatBadgeModule} from '@angular/material/badge';
 
 
 @NgModule({
   declarations: [
     QuotesViewComponent,
     EpisodeViewComponent,
-    AddQuoteComponent
+    AddQuoteComponent,
+    QuotesByCharacterComponent
   ],
   imports: [
     CommonModule,
@@ -28,7 +31,8 @@ import {MatButtonModule} from '@angular/material/button';
     ReactiveFormsModule,
     MatDialogModule,
     MatAutocompleteModule,
-    MatButtonModule
+    MatButtonModule,
+    MatBadgeModule
   ]
 })
 export class FriendsModule { }

@@ -19,7 +19,7 @@ export class EpisodeViewComponent implements OnInit {
   searchQuoteControl = new FormControl(this.searchService.searchQuery);
 
   private quotesSubject = new BehaviorSubject<Quote[]>([]);
-  private readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
+  public readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
 
   public readonly filteredQuotes$: Observable<Quote[]> =
     this.searchService.searchQuery$.pipe(

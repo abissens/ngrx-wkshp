@@ -33,7 +33,7 @@ export class QuotesViewComponent implements OnInit {
   searchQuoteControl = new FormControl(this.searchService.searchQuery);
 
   private quotesSubject = new BehaviorSubject<Quote[]>([]);
-  private readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
+  public readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
 
   private charactersSubject = new BehaviorSubject<Character[]>([]);
   private readonly allCharacters$ = this.charactersSubject.asObservable();

@@ -5,6 +5,8 @@
   </mat-form-field>
 </div>
 
+<app-quotes-by-character [quotes$]="quotes$"></app-quotes-by-character>
+
 <div class="quotes-container">
   <div *ngIf="loadingQuotesStatus === 'LOADING'" class="loading-indicator">
     Loading quotes...
