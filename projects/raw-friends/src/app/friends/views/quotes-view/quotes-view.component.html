@@ -3,6 +3,7 @@
     <mat-label>Search quotes...</mat-label>
     <input matInput placeholder="Search quotes..." [formControl]="searchQuoteControl" >
   </mat-form-field>
+  <button mat-raised-button (click)="openDialog()">Add Quote</button>
 </div>
 
 <div class="quotes-container">

@@ -41,6 +41,8 @@ describe('QuotesViewComponent', () => {
   it('load quotes on initialization', fakeAsync(() => {
     // get quotes init
     quoteService.getQuotes.mockReturnValue(of(mockQuotes));
+    quoteService.getCharacters.mockReturnValue(of(mockCharacters));
+    quoteService.getEpisodes.mockReturnValue(of(mockEpisodes));
 
     // prepare fixture
     const fixture = TestBed.createComponent(QuotesViewComponent);
@@ -61,6 +63,8 @@ describe('QuotesViewComponent', () => {
     // Given empty observable
     const subject = new Subject<Quote[]>();
     quoteService.getQuotes.mockReturnValue(subject);
+    quoteService.getCharacters.mockReturnValue(of(mockCharacters));
+    quoteService.getEpisodes.mockReturnValue(of(mockEpisodes));
 
     // prepare fixture
     const fixture = TestBed.createComponent(QuotesViewComponent);
@@ -89,6 +93,8 @@ describe('QuotesViewComponent', () => {
   it('display "No quotes available." on empty', fakeAsync(() => {
     // get quotes init
     quoteService.getQuotes.mockReturnValue(of([]));
+    quoteService.getCharacters.mockReturnValue(of(mockCharacters));
+    quoteService.getEpisodes.mockReturnValue(of(mockEpisodes));
 
     // prepare fixture
     const fixture = TestBed.createComponent(QuotesViewComponent);
@@ -105,6 +111,8 @@ describe('QuotesViewComponent', () => {
   it('display "Cannot load quotes." on error', () => {
     // get quotes is errored
     quoteService.getQuotes.mockReturnValue(throwError(() => new Error("some error")));
+    quoteService.getCharacters.mockReturnValue(of(mockCharacters));
+    quoteService.getEpisodes.mockReturnValue(of(mockEpisodes));
 
     // prepare fixture
     const fixture = TestBed.createComponent(QuotesViewComponent);
@@ -117,6 +125,8 @@ describe('QuotesViewComponent', () => {
   it('fire snackbar on error for 3 seconds', fakeAsync(() => {
     // get quotes is errored
     quoteService.getQuotes.mockReturnValue(throwError(() => new Error("some error")));
+    quoteService.getCharacters.mockReturnValue(of(mockCharacters));
+    quoteService.getEpisodes.mockReturnValue(of(mockEpisodes));
 
     // prepare fixture
     const fixture = TestBed.createComponent(QuotesViewComponent);
@@ -137,6 +147,8 @@ describe('QuotesViewComponent', () => {
   it('handle search filter', fakeAsync(() => {
     // get quotes init
     quoteService.getQuotes.mockReturnValue(of(mockQuotes));
+    quoteService.getCharacters.mockReturnValue(of(mockCharacters));
+    quoteService.getEpisodes.mockReturnValue(of(mockEpisodes));
 
     // prepare fixture
     const fixture = TestBed.createComponent(QuotesViewComponent);
@@ -161,6 +173,8 @@ describe('QuotesViewComponent', () => {
   it('should handle search filter when empty', fakeAsync(() => {
     // get quotes init
     quoteService.getQuotes.mockReturnValue(of(mockQuotes));
+    quoteService.getCharacters.mockReturnValue(of(mockCharacters));
+    quoteService.getEpisodes.mockReturnValue(of(mockEpisodes));
 
     // prepare fixture
     const fixture = TestBed.createComponent(QuotesViewComponent);

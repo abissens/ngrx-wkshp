@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {RequestStatus} from '../data/request.data';
-import {BehaviorSubject, debounceTime, distinctUntilChanged, map, mergeMap, Observable, startWith} from 'rxjs';
+import {BehaviorSubject, debounceTime, distinctUntilChanged, map, mergeMap, Observable} from 'rxjs';
 import {Quote} from '../../domain/quote.model';
 import {QuoteService} from '../../services/quote.service';
 import {MatSnackBar} from '@angular/material/snack-bar';

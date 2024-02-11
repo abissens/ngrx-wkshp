@@ -7,12 +7,17 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatInputModule} from '@angular/material/input';
 import {ReactiveFormsModule} from '@angular/forms';
+import {AddQuoteComponent} from './components/add-quote/add-quote.component';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatButtonModule} from '@angular/material/button';
 
 
 @NgModule({
   declarations: [
     QuotesViewComponent,
-    EpisodeViewComponent
+    EpisodeViewComponent,
+    AddQuoteComponent
   ],
   imports: [
     CommonModule,
@@ -20,7 +25,10 @@ import {ReactiveFormsModule} from '@angular/forms';
     MatProgressBarModule,
     MatSnackBarModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatAutocompleteModule,
+    MatButtonModule
   ]
 })
 export class FriendsModule { }
