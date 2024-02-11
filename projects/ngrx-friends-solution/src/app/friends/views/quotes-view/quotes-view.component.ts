@@ -107,9 +107,4 @@ export class QuotesViewComponent implements OnInit {
         this.loadQuotes();
       });
   }
-
-  private searchFilter(quote: Quote, searchQuery: string) {
-    return quote.character?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      quote.text.toLowerCase().includes(searchQuery.toLowerCase())
-  }
 }
