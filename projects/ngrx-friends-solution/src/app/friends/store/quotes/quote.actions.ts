@@ -2,8 +2,7 @@ import {createActionGroup, emptyProps, props} from '@ngrx/store';
 import {Quote} from '../../domain/quote.model';
 import {Character} from '../../domain/character.model';
 import {Episode} from '../../domain/episode.model';
-import {ALL_CHARACTERS, ALL_EPISODES, LOADING_QUOTES_STATUS, QUOTES} from '../global.state';
-import {RequestStatus} from '../../views/data/request.data';
+import {ALL_CHARACTERS, ALL_EPISODES, QUOTES} from '../global.state';
 
 export const QuoteAPIActions = createActionGroup({
   source: 'Quotes API',
