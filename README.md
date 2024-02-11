@@ -34,4 +34,12 @@ npx jest --init
 #     }
 #   }
 
+ng add @angular/material@16 --theme=indigo-pink --animations=enabled --typography --project raw-friends
+ng add @angular/material@16 --theme=indigo-pink --animations=enabled --typography --project ngrx-friends
+
+ng add @ngrx/store@16 --project ngrx-friends
+ng add @ngrx/effects@16 --project ngrx-friends
+ng add @ngrx/store-devtools@16 --project ngrx-friends
+
+ng add @ngrx/eslint-plugin@16 --project ngrx-friends
 ```
