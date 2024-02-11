@@ -30,6 +30,7 @@
               "projects/raw-friends/src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/indigo-pink.css",
               "projects/raw-friends/src/styles.less"
             ],
             "scripts": []
@@ -114,6 +115,7 @@
               "projects/ngrx-friends/src/assets"
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/indigo-pink.css",
               "projects/ngrx-friends/src/styles.less"
             ],
             "scripts": []
