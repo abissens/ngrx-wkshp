@@ -1,16 +1,24 @@
+<div class="quotes-controls">
+  <mat-form-field >
+    <mat-label>Search quotes...</mat-label>
+    <input matInput placeholder="Search quotes..." [formControl]="searchQuoteControl" >
+  </mat-form-field>
+</div>
+
+
 <div class="quotes-container">
   <div *ngIf="loadingQuotesStatus === 'LOADING'" class="loading-indicator">
     Loading quotes...
     <mat-progress-bar mode="indeterminate"></mat-progress-bar>
   </div>
-  <div *ngIf="loadingQuotesStatus === 'LOADED' && (quotes$ | async)?.length === 0" class="no-quotes">
+  <div *ngIf="loadingQuotesStatus === 'LOADED' && (filteredQuotes$ | async)?.length === 0" class="no-quotes">
     No quotes available.
   </div>
   <div *ngIf="loadingQuotesStatus === 'ERRORED'" class="err-quotes">
     Cannot load quotes.
   </div>
-  <div *ngIf="loadingQuotesStatus === 'LOADED' && ((quotes$ | async)?.length !== 0)" class="quote-list">
-    <div *ngFor="let quote of (quotes$ | async)!" class="quote-item">
+  <div *ngIf="loadingQuotesStatus === 'LOADED' && ((filteredQuotes$ | async)?.length !== 0)" class="quote-list">
+    <div *ngFor="let quote of (filteredQuotes$ | async)!" class="quote-item">
       <div class="quote-content">
         <span class="character-name">{{ quote.character.name }}</span>
         <span class="quote-text">{{ quote.text }}</span>
