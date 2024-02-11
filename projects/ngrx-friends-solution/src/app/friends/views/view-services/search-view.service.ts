@@ -1,18 +1,21 @@
 import {Injectable} from "@angular/core";
-import {BehaviorSubject} from "rxjs";
+import {Store} from '@ngrx/store';
+import {searchQuoteAction, selectSearchQuote} from '../../store/view/view.store';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchViewService {
-  private searchQuerySubject = new BehaviorSubject<string>('');
-  public readonly searchQuery$ = this.searchQuerySubject.asObservable();
+  private searchQuerySignal = this.store.selectSignal(selectSearchQuote);
 
-  get searchQuery(): string {
-    return this.searchQuerySubject.value;
+  constructor(private store: Store) {
   }
 
-  set searchQuery(query: string) {
-    this.searchQuerySubject.next(query);
+  get searchQuery(): string {
+    return this.searchQuerySignal();
+  }
+
+  set searchQuery(searchValue: string) {
+    this.store.dispatch(searchQuoteAction({searchValue}));
   }
 }

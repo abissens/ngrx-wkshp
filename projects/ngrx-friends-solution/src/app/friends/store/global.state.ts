@@ -7,10 +7,12 @@ export const QUOTES = 'quotes';
 export const ALL_CHARACTERS = 'allCharacters';
 export const ALL_EPISODES = 'allEpisodes';
 export const LOADING_QUOTES_STATUS = 'loadingQuotesStatus';
+export const SEARCH_QUOTES = 'searchQuotes';
 
 export interface FriendState {
   [QUOTES]: ReadonlyArray<Quote>
   [ALL_CHARACTERS]: ReadonlyArray<Character>
   [ALL_EPISODES]: ReadonlyArray<Episode>
   [LOADING_QUOTES_STATUS]: RequestStatus
+  [SEARCH_QUOTES]: string
 }

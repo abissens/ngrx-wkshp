@@ -14,6 +14,7 @@ import {selectLoadingQuoteStatus, selectQuotes} from '../../store/quotes/quote.s
 import {QuoteAPIActions} from '../../store/quotes/quote.actions';
 import {selectCharacters} from '../../store/characters/characters.store';
 import {selectEpisodes} from '../../store/episodes/episodes.store';
+import {selectSearchQuote} from '../../store/view/view.store';
 
 @Component({
   selector: 'app-quotes-view',
@@ -24,6 +25,8 @@ export class QuotesViewComponent implements OnInit {
 
   loadingQuotesStatus: Signal<RequestStatus> = this.store.selectSignal(selectLoadingQuoteStatus);
 
+  private readonly searchQuote$ = this.store.select(selectSearchQuote);
+
   searchQuoteControl = new FormControl(this.searchService.searchQuery);
 
   public readonly quotes$: Observable<readonly Quote[]> = this.store.select(selectQuotes);
@@ -33,7 +36,7 @@ export class QuotesViewComponent implements OnInit {
   private readonly allEpisodes$ = this.store.select(selectEpisodes);
 
   public readonly filteredQuotes$: Observable<Quote[]> =
-    this.searchService.searchQuery$.pipe(
+    this.searchQuote$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       mergeMap(searchValue => this.quotes$.pipe(map(quotes => quotes.filter(quote => this.searchFilter(quote, searchValue ?? '')))))

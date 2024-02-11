@@ -7,6 +7,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute} from '@angular/router';
 import {FormControl} from '@angular/forms';
 import {SearchViewService} from '../view-services/search-view.service';
+import {selectSearchQuote} from '../../store/view/view.store';
+import {Store} from '@ngrx/store';
 
 @Component({
   selector: 'app-episode-view',
@@ -16,19 +18,23 @@ import {SearchViewService} from '../view-services/search-view.service';
 export class EpisodeViewComponent implements OnInit {
   loadingQuotesStatus: RequestStatus = RequestStatus.LOADED;
 
+  private readonly searchQuote$ = this.store.select(selectSearchQuote);
+
   searchQuoteControl = new FormControl(this.searchService.searchQuery);
 
   private quotesSubject = new BehaviorSubject<Quote[]>([]);
   public readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
 
   public readonly filteredQuotes$: Observable<Quote[]> =
-    this.searchService.searchQuery$.pipe(
+    this.searchQuote$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       mergeMap(searchValue => this.quotes$.pipe(map(quotes => quotes.filter(quote => this.searchFilter(quote, searchValue ?? '')))))
     );
+
   constructor(private quoteService: QuoteService,
               private searchService: SearchViewService,
+              private store: Store,
               private route: ActivatedRoute,
               private snackBar: MatSnackBar) {
   }
@@ -37,7 +43,7 @@ export class EpisodeViewComponent implements OnInit {
     this.route.params.subscribe((params) => {
       const episodeId = +params['id'];
       this.loadQuotesForEpisode(episodeId);
-      this.searchQuoteControl.valueChanges.subscribe(v => this.searchService.searchQuery = v??'');
+      this.searchQuoteControl.valueChanges.subscribe(v => this.searchService.searchQuery = v ?? '');
     });
   }
 
