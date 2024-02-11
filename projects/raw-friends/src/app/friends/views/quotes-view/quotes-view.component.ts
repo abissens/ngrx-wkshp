@@ -20,7 +20,7 @@ export class QuotesViewComponent implements OnInit {
   private quotesSubject = new BehaviorSubject<Quote[]>([]);
   private readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
 
-  public filteredQuotes$: Observable<Quote[]> =
+  public readonly  filteredQuotes$: Observable<Quote[]> =
     this.searchQuoteControl.valueChanges.pipe(
       startWith(this.searchQuoteControl.value), // make it emit first value
       debounceTime(300),
