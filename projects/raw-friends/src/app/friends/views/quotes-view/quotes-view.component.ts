@@ -5,6 +5,7 @@ import {QuoteService} from '../../services/quote.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {RequestStatus} from '../data/request.data';
 import {FormControl} from '@angular/forms';
+import {SearchViewService} from '../view-services/search-view.service';
 
 @Component({
   selector: 'app-quotes-view',
@@ -15,25 +16,26 @@ export class QuotesViewComponent implements OnInit {
 
   loadingQuotesStatus: RequestStatus = RequestStatus.LOADED;
 
-  searchQuoteControl = new FormControl('');
+  searchQuoteControl = new FormControl(this.searchService.searchQuery);
 
   private quotesSubject = new BehaviorSubject<Quote[]>([]);
   private readonly quotes$: Observable<Quote[]> = this.quotesSubject.asObservable();
 
   public readonly  filteredQuotes$: Observable<Quote[]> =
-    this.searchQuoteControl.valueChanges.pipe(
-      startWith(this.searchQuoteControl.value), // make it emit first value
+    this.searchService.searchQuery$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       mergeMap(searchValue => this.quotes$.pipe(map(quotes => quotes.filter(quote => this.searchFilter(quote, searchValue ?? '')))))
     );
 
   constructor(private quoteService: QuoteService,
+              private searchService: SearchViewService,
               private snackBar: MatSnackBar) {
   }
 
   ngOnInit(): void {
     this.loadQuotes();
+    this.searchQuoteControl.valueChanges.subscribe(v => this.searchService.searchQuery = v??'');
   }
 
   loadQuotes(): void {
