@@ -8,6 +8,7 @@ import {Character} from '../../domain/character.model';
 import {Episode} from '../../domain/episode.model';
 import {of, Subject, throwError} from 'rxjs';
 import {AppRoutingModule} from '../../../app-routing.module';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('QuotesViewComponent', () => {
   let quoteService: jest.Mocked<QuoteService>;
@@ -25,7 +26,9 @@ describe('QuotesViewComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [QuotesViewComponent],
-      imports: [FriendsModule, AppRoutingModule],
+      imports: [FriendsModule, AppRoutingModule, NoopAnimationsModule],
+      // js-dom cannot handle animations
+      // so import NoopAnimationsModule
       providers: [{provide: QuoteService, useValue: quoteService}],
     });
   });
@@ -98,6 +101,18 @@ describe('QuotesViewComponent', () => {
     // no quotes
     expect(selectFixture(fixture, '.err-quotes').textContent).toContain('Cannot load quotes.');
   });
+
+  it('fire snackbar on error', () => {
+    // get quotes is errored
+    quoteService.getQuotes.mockReturnValue(throwError(() => new Error("some error")));
+
+    // prepare fixture
+    const fixture = TestBed.createComponent(QuotesViewComponent);
+    fixture.detectChanges();
+
+    // err snack bar
+    expect(selectFixtureParent(fixture, '.mat-mdc-snack-bar-label').textContent).toContain('some error');
+  });
 });
 
 const mockCharacters: Character[] = [
@@ -116,4 +131,8 @@ const mockQuotes: Quote[] = [
 
 function selectFixture<T>(fixture: ComponentFixture<T>, selector: string) {
   return fixture.nativeElement.querySelector(selector);
+}
+
+function selectFixtureParent<T>(fixture: ComponentFixture<T>, selector: string) {
+  return fixture.nativeElement.parentNode.querySelector(selector);
 }
