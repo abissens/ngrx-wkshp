@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>Add New Quote</h2>
+<div mat-dialog-content [formGroup]="quoteForm">
+  <div class="form-group">
+    <mat-form-field appearance="fill">
+      <mat-label>Character Name</mat-label>
+      <input matInput type="text" formControlName="character" required [matAutocomplete]="autoCharacter">
+      <mat-autocomplete #autoCharacter="matAutocomplete">
+        <mat-option *ngFor="let character of filteredCharacters$ | async" [value]="character.name">
+          {{character.name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+
+  <div class="form-group">
+    <mat-form-field appearance="fill">
+      <mat-label>Season Number</mat-label>
+      <input matInput type="number" formControlName="season" required min="1" max="10">
+    </mat-form-field>
+  </div>
+
+  <div class="form-group">
+    <mat-form-field appearance="fill">
+      <mat-label>Episode Title</mat-label>
+      <input matInput type="text" formControlName="episodeTitle" required [matAutocomplete]="autoEpisode">
+      <mat-autocomplete #autoEpisode="matAutocomplete">
+        <mat-option *ngFor="let episode of filteredEpisodes$ | async" [value]="episode.title">
+          {{episode.title}} (season {{episode.season}})
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+
+  <div class="form-group">
+    <mat-form-field appearance="fill">
+      <mat-label>Quote Text</mat-label>
+      <textarea matInput formControlName="text" rows="3" required></textarea>
+    </mat-form-field>
+  </div>
+
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onCancelClick()">Cancel</button>
+  <button mat-button (click)="onSubmit()" [disabled]="!quoteForm.valid">Add</button>
+</div>

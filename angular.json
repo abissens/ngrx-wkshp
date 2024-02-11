@@ -190,6 +190,100 @@
           }
         }
       }
+    },
+    "ngrx-friends-solution": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "less"
+        }
+      },
+      "root": "projects/ngrx-friends-solution",
+      "sourceRoot": "projects/ngrx-friends-solution/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/ngrx-friends-solution",
+            "index": "projects/ngrx-friends-solution/src/index.html",
+            "main": "projects/ngrx-friends-solution/src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "projects/ngrx-friends-solution/tsconfig.app.json",
+            "inlineStyleLanguage": "less",
+            "assets": [
+              "projects/ngrx-friends-solution/src/favicon.ico",
+              "projects/ngrx-friends-solution/src/assets"
+            ],
+            "styles": [
+              "@angular/material/prebuilt-themes/indigo-pink.css",
+              "projects/ngrx-friends-solution/src/styles.less"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "ngrx-friends-solution:build:production"
+            },
+            "development": {
+              "browserTarget": "ngrx-friends-solution:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "ngrx-friends-solution:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "configPath": "../../jest.config.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ngrx-friends-solution/**/*.ts",
+              "projects/ngrx-friends-solution/**/*.html"
+            ]
+          }
+        }
+      }
     }
   }
 }
