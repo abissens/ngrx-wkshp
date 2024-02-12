@@ -5,14 +5,11 @@ import {QuoteService} from '../../services/quote.service';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {RequestStatus} from '../data/request.data';
 import {FormControl} from '@angular/forms';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MatDialog} from '@angular/material/dialog';
 import {AddQuoteComponent} from '../../components/add-quote/add-quote.component';
-import {AddQuoteComponentData} from '../../components/add-quote/AddQuoteComponentData';
 import {Store} from '@ngrx/store';
 import {selectFilteredQuotes, selectLoadingQuoteStatus, selectQuotes} from '../../store/quotes/quote.selectors';
 import {QuoteActions, QuoteAPIActions} from '../../store/quotes/quote.actions';
-import {selectCharacters} from '../../store/characters/characters.store';
-import {selectEpisodes} from '../../store/episodes/episodes.store';
 import {searchQuoteAction, selectSearchQuote} from '../../store/view/view.store';
 
 @Component({
@@ -29,10 +26,6 @@ export class QuotesViewComponent implements OnInit {
   searchQuoteControl = new FormControl(this.searchQuoteSignal());
 
   public readonly quotes$: Observable<readonly Quote[]> = this.store.select(selectQuotes);
-
-  private readonly allCharacters$ = this.store.select(selectCharacters);
-
-  private readonly allEpisodes$ = this.store.select(selectEpisodes);
 
   public readonly filteredQuotes$: Observable<Quote[]> = this.store.select(selectFilteredQuotes);
 
@@ -91,20 +84,12 @@ export class QuotesViewComponent implements OnInit {
   }
 
   openDialog(): void {
-    const dialogRef: MatDialogRef<AddQuoteComponent, QuoteAddRequest> = this.dialog.open<AddQuoteComponent, AddQuoteComponentData>(AddQuoteComponent, {
-      width: '500px',
-      data: {
-        allCharacters$: this.allCharacters$,
-        allEpisodes$: this.allEpisodes$
-      }
-    });
+    const dialogRef = this.dialog.open(AddQuoteComponent, {width: '500px'});
 
     dialogRef.afterClosed()
       .pipe(
         filter(quote => quote !== undefined) as OperatorFunction<QuoteAddRequest | undefined, QuoteAddRequest>,
         mergeMap(quote => this.quoteService.addQuote(quote)))
-      .subscribe(quote => {
-        this.store.dispatch(QuoteActions.quoteAdded({quote}))
-      });
+      .subscribe(quote => this.store.dispatch(QuoteActions.quoteAdded({quote})));
   }
 }

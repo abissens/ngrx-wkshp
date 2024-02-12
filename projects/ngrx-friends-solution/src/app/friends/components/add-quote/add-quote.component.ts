@@ -1,10 +1,12 @@
-import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component} from '@angular/core';
+import {MatDialogRef} from '@angular/material/dialog';
 
 import {map, mergeMap, startWith} from 'rxjs';
-import {AddQuoteComponentData} from './AddQuoteComponentData';
 import {FormBuilder, Validators} from '@angular/forms';
 import {QuoteAddRequest} from '../../domain/quote.model';
+import {Store} from '@ngrx/store';
+import {selectCharacters} from '../../store/characters/characters.store';
+import {selectEpisodes} from '../../store/episodes/episodes.store';
 
 @Component({
   selector: 'app-add-quote',
@@ -20,21 +22,27 @@ export class AddQuoteComponent {
     text: ['', Validators.required]
   });
 
+  private allCharacters$ = this.store.select(selectCharacters);
+
+  private allEpisodes$ = this.store.select(selectEpisodes);
+
   filteredCharacters$ = this.quoteForm.controls.character.valueChanges.pipe(
     startWith(''),
-    mergeMap(value => this.data.allCharacters$.pipe(map(c => c.filter(c => c.name.toLowerCase().includes(value??''.toLowerCase())))))
+    mergeMap(value => this.allCharacters$.pipe(map(c => c.filter(c => c.name.toLowerCase().includes(value ?? ''.toLowerCase())))))
   );
 
   filteredEpisodes$ = this.quoteForm.controls.episodeTitle.valueChanges.pipe(
     startWith(''),
-    mergeMap(value => this.data.allEpisodes$.pipe(map(e => e.filter(e => e.title.toLowerCase().includes(value??''.toLowerCase())))))
+    mergeMap(value => this.allEpisodes$.pipe(map(e => e.filter(e => e.title.toLowerCase().includes(value ?? ''.toLowerCase())))))
   );
+
 
   constructor(
     private dialogRef: MatDialogRef<AddQuoteComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: AddQuoteComponentData,
+    private store: Store,
     private formBuilder: FormBuilder
-  ) {}
+  ) {
+  }
 
   onCancelClick(): void {
     this.dialogRef.close();
