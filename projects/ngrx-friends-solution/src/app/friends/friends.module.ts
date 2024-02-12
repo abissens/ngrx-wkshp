@@ -19,6 +19,8 @@ import {loadingQuoteStatusReducer, quotesReducer} from './store/quotes/quote.red
 import {charactersReducer} from './store/characters/characters.store';
 import {episodesReducer} from './store/episodes/episodes.store';
 import {searchQuoteReducer} from './store/view/view.store';
+import {QuoteEffects} from './store/quotes/quote.effects';
+import {EffectsModule} from '@ngrx/effects';
 
 
 @NgModule({
@@ -46,6 +48,7 @@ import {searchQuoteReducer} from './store/view/view.store';
       [LOADING_QUOTES_STATUS]: loadingQuoteStatusReducer,
       [SEARCH_QUOTES]: searchQuoteReducer,
     }),
+    EffectsModule.forRoot(QuoteEffects),
   ]
 })
 export class FriendsModule {

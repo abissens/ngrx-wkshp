@@ -1,15 +1,13 @@
 import {Component, OnInit, Signal} from '@angular/core';
-import {debounceTime, distinctUntilChanged, filter, mergeMap, Observable, OperatorFunction} from 'rxjs';
-import {Quote, QuoteAddRequest} from '../../domain/quote.model';
-import {QuoteService} from '../../services/quote.service';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {debounceTime, distinctUntilChanged, Observable} from 'rxjs';
+import {Quote} from '../../domain/quote.model';
 import {RequestStatus} from '../data/request.data';
 import {FormControl} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {AddQuoteComponent} from '../../components/add-quote/add-quote.component';
 import {Store} from '@ngrx/store';
 import {selectFilteredQuotes, selectLoadingQuoteStatus, selectQuotes} from '../../store/quotes/quote.selectors';
-import {QuoteActions, QuoteAPIActions} from '../../store/quotes/quote.actions';
+import {QuoteActions} from '../../store/quotes/quote.actions';
 import {searchQuoteAction, selectSearchQuote} from '../../store/view/view.store';
 
 @Component({
@@ -29,9 +27,7 @@ export class QuotesViewComponent implements OnInit {
 
   public readonly filteredQuotes$: Observable<Quote[]> = this.store.select(selectFilteredQuotes);
 
-  constructor(private quoteService: QuoteService,
-              private dialog: MatDialog,
-              private snackBar: MatSnackBar,
+  constructor(private dialog: MatDialog,
               private store: Store) {
   }
 
@@ -46,50 +42,25 @@ export class QuotesViewComponent implements OnInit {
   }
 
   loadQuotes(): void {
-    this.store.dispatch(QuoteAPIActions.loadingQuotes());
-    this.quoteService.getQuotes().subscribe({
-      next: quotes => {
-        this.store.dispatch(QuoteAPIActions.loadedQuotes());
-        this.store.dispatch(QuoteAPIActions.retrievedQuotes({quotes: [...quotes]}))
-      },
-      error: err => {
-        this.store.dispatch(QuoteAPIActions.errorLoadingQuotes());
-        this.snackBar.open(err.message, undefined, {
-          duration: 3000
-        });
-      },
-    });
+    this.store.dispatch(QuoteActions.allQuotesLoading());
   }
 
   private loadCharacters() {
-    this.quoteService.getCharacters().subscribe({
-      next: characters => this.store.dispatch(QuoteAPIActions.retrievedCharacters({allCharacters: [...characters]})),
-      error: err => {
-        this.snackBar.open(err.message, undefined, {
-          duration: 3000
-        });
-      }
-    });
+    this.store.dispatch(QuoteActions.allCharactersLoading());
   }
 
   private loadEpisodes() {
-    this.quoteService.getEpisodes().subscribe({
-      next: episodes => this.store.dispatch(QuoteAPIActions.retrievedEpisodes({allEpisodes: [...episodes]})),
-      error: err => {
-        this.snackBar.open(err.message, undefined, {
-          duration: 3000
-        });
-      }
-    });
+    this.store.dispatch(QuoteActions.allEpisodesLoading());
   }
 
   openDialog(): void {
     const dialogRef = this.dialog.open(AddQuoteComponent, {width: '500px'});
 
-    dialogRef.afterClosed()
-      .pipe(
-        filter(quote => quote !== undefined) as OperatorFunction<QuoteAddRequest | undefined, QuoteAddRequest>,
-        mergeMap(quote => this.quoteService.addQuote(quote)))
-      .subscribe(quote => this.store.dispatch(QuoteActions.quoteAdded({quote})));
+    dialogRef.afterClosed().subscribe(quoteRequest => {
+      if (quoteRequest === undefined) {
+        return;
+      }
+      this.store.dispatch(QuoteActions.quoteAdding({request: quoteRequest}))
+    });
   }
 }

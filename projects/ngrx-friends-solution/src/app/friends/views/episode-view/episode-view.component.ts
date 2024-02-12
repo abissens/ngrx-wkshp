@@ -2,13 +2,11 @@ import {Component, OnInit, Signal} from '@angular/core';
 import {RequestStatus} from '../data/request.data';
 import {debounceTime, distinctUntilChanged, Observable} from 'rxjs';
 import {Quote} from '../../domain/quote.model';
-import {QuoteService} from '../../services/quote.service';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute} from '@angular/router';
 import {FormControl} from '@angular/forms';
 import {searchQuoteAction, selectSearchQuote} from '../../store/view/view.store';
 import {Store} from '@ngrx/store';
-import {QuoteAPIActions} from '../../store/quotes/quote.actions';
+import {QuoteActions} from '../../store/quotes/quote.actions';
 import {
   selectFilteredQuotesForEpisodeFactory,
   selectLoadingQuoteStatus,
@@ -32,10 +30,8 @@ export class EpisodeViewComponent implements OnInit {
 
   public filteredQuotes$?: Observable<Quote[]>;
 
-  constructor(private quoteService: QuoteService,
-              private store: Store,
-              private route: ActivatedRoute,
-              private snackBar: MatSnackBar) {
+  constructor(private store: Store,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
@@ -53,18 +49,6 @@ export class EpisodeViewComponent implements OnInit {
   }
 
   loadQuotes(): void {
-    this.store.dispatch(QuoteAPIActions.loadingQuotes());
-    this.quoteService.getQuotes().subscribe({
-      next: quotes => {
-        this.store.dispatch(QuoteAPIActions.loadedQuotes());
-        this.store.dispatch(QuoteAPIActions.retrievedQuotes({quotes: [...quotes]}))
-      },
-      error: err => {
-        this.store.dispatch(QuoteAPIActions.errorLoadingQuotes());
-        this.snackBar.open(err.message, undefined, {
-          duration: 3000
-        });
-      },
-    });
+    this.store.dispatch(QuoteActions.allQuotesLoading());
   }
 }

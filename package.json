@@ -9,7 +9,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "eslint": "ng lint"
+    "eslint": "ng lint",
+    "eslint-fix": "ng lint --fix"
   },
   "private": true,
   "dependencies": {
